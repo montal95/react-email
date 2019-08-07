@@ -22,23 +22,20 @@ passport.use(
       clientID: keys.googleClientID,
       clientSecret: keys.googleClientSecret,
       callbackURL: "/auth/google/callback",
-      proxy:true
+      proxy: true
     },
     //response information
-    (accessToken, refreshToken, profile, done) => {
+    async (accessToken, refreshToken, profile, done) => {
       //find out if user exists. The promise then creates the user if non-existent, passport strategy
-      User.findOne({ googleId: profile.id }).then(existingUser => {
-        if (existingUser) {
-          //user already exists in collection. Finished passport strategy and returns existing user
-          done(null, existingUser);
-        } else {
-          //create new user in collection
-          //save new user then finish passport strategy
-          new User({ googleId: profile.id })
-            .save()
-            .then(user => done(null, user));
-        }
-      });
+      const existingUser = await User.findOne({ googleId: profile.id });
+      if (existingUser) {
+        //user already exists in collection. Finished passport strategy and returns existing user
+        return done(null, existingUser);
+      }
+      //create new user in collection
+      //save new user then finish passport strategy
+      const user = await new User({ googleId: profile.id }).save();
+      done(null, user);
     }
   )
 );
