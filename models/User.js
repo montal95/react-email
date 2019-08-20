@@ -1,9 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    googleId: String
+  googleId: String,
+  credits: {
+    type: Number,
+    default: 0
+  }
 });
 
 //will create collection if it doesn't already exist
-mongoose.model('users', userSchema);
+mongoose.model("users", userSchema);
